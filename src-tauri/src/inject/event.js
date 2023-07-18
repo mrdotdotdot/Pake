@@ -185,20 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Rewrite the window.open function.
   const originalWindowOpen = window.open;
-  window.open = function(url, name, specs) {
-    // Apple login and google login
-    if (name === 'AppleAuthentication') {
-      //do nothing
-    } else if (specs.includes('height=') || specs.includes('width=')) {
-      location.href = url;
-    } else {
-      const baseUrl = window.location.origin + window.location.pathname;
-      const hrefUrl = new URL(url, baseUrl);
-      tauri.shell.open(hrefUrl.href);
-    }
-    // Call the original window.open function to maintain its normal functionality.
-    return originalWindowOpen.call(window, url, name, specs);
+  window.open = function (open) {
+  return function (url, name, features) {
+    window.top.location = url;
+    return false;
   };
+}(window.open);
 
   // Set the default zoom, There are problems with Loop without using try-catch.
   try {
